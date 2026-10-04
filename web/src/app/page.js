@@ -83,7 +83,8 @@ export default function Home() {
   const [error, setError] = useState("");
   const [result, setResult] = useState(null);
   const [saved, setSaved] = useState([]);
-
+  const [ai, setAi] = useState(null);
+  const [aiLoading, setAiLoading] = useState(false);
   // Load saved reports once, after the page opens
   useEffect(() => {
     const id = setTimeout(() => setSaved(loadReports()), 0);
@@ -114,8 +115,22 @@ export default function Home() {
         setError(data.error || "Something went wrong");
         setResult(null);
       } else {
-                setResult(data);
+                        setResult(data);
         setSaved(saveReport(data));
+
+        // Ask for the AI summary in the background; the report is already visible
+        setAiLoading(true);
+        fetch("/api/summary", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        })
+          .then((r) => r.json())
+          .then((s) => {
+            if (s.text) setAi({ for: data.generated_at, text: s.text });
+          })
+          .catch(() => {})
+          .finally(() => setAiLoading(false));
         setTimeout(() => {
           const el = document.getElementById("report");
           if (el) el.scrollIntoView({ behavior: "smooth" });
@@ -142,6 +157,8 @@ export default function Home() {
     window.print();
   };
   const cmp = result ? result.comparison : null;
+    const aiShown = Boolean(ai && result && ai.for === result.generated_at);
+  const summaryText = aiShown ? ai.text : result && result.summary ? result.summary.text : "";
 
   return (
     <main className="min-h-screen">
@@ -273,6 +290,23 @@ export default function Home() {
                 Export PDF
               </button>
             </div>
+                        {summaryText && (
+              <div className={cardClass}>
+                <div className="flex items-center justify-between gap-3">
+                  <h3 className="font-semibold">Summary</h3>
+                  <span
+                    className={`rounded-full px-2.5 py-1 text-xs font-medium ${
+                      aiShown
+                        ? "bg-indigo-500/10 text-indigo-600 dark:text-indigo-300"
+                        : "bg-slate-500/10 text-slate-600 dark:text-slate-300"
+                    }`}
+                  >
+                    {aiShown ? "AI-written" : aiLoading ? "Rule-based · AI loading…" : "Rule-based"}
+                  </span>
+                </div>
+                <p className="mt-3 text-sm leading-relaxed">{summaryText}</p>
+              </div>
+            )}
 
             <div className="grid gap-4 sm:grid-cols-3">
               <div className={cardClass}>

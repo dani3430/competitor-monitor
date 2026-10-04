@@ -1,5 +1,6 @@
 import * as cheerio from "cheerio";
 import { clamp, avg, median, extractPrices, websiteScores, compare } from "@/lib/scoring.mjs";
+import { ruleSummary } from "@/lib/summary.mjs";
 export const maxDuration = 30;
 
 const UA = { "User-Agent": "Mozilla/5.0 (compatible; CompetitorMonitor/1.0)" };
@@ -390,12 +391,11 @@ export async function POST(req) {
       );
     }
 
-    return Response.json({
-      me: myProfile,
-      competitors: others,
-      comparison: compare(myProfile, others),
-      generated_at: new Date().toISOString(),
-    });
+        const comparison = compare(myProfile, others);
+    const result = { me: myProfile, competitors: others, comparison };
+
+        const summary = { text: ruleSummary(result), source: "rules" };
+    return Response.json({ ...result, summary, generated_at: new Date().toISOString() });
   } catch (e) {
     return Response.json({ error: e.message || "Analysis failed" }, { status: 400 });
   }
