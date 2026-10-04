@@ -5,10 +5,10 @@
     "status": 200,
     "up": true,
     "title": "Example Domain",
-    "response_ms": 104,
+    "response_ms": 60,
     "hash": "162b81548a8d",
     "changed": false,
-    "checked_at": "2026-10-04T12:13:55.688784+00:00"
+    "checked_at": "2026-10-04T16:41:19.250758+00:00"
   },
   {
     "name": "Python",
@@ -16,10 +16,10 @@
     "status": 200,
     "up": true,
     "title": "Welcome to Python.org",
-    "response_ms": 276,
+    "response_ms": 47,
     "hash": "b8a48e368de2",
     "changed": false,
-    "checked_at": "2026-10-04T12:13:55.799479+00:00"
+    "checked_at": "2026-10-04T16:41:19.313872+00:00"
   },
   {
     "name": "GitHub",
@@ -27,9 +27,9 @@
     "status": 200,
     "up": true,
     "title": "GitHub \u00b7 Change is constant. GitHub keeps you ahead. \u00b7 GitHub",
-    "response_ms": 338,
+    "response_ms": 41,
     "hash": "0c743d410f58",
     "changed": false,
-    "checked_at": "2026-10-04T12:13:56.305346+00:00"
+    "checked_at": "2026-10-04T16:41:19.424199+00:00"
   }
 ]
