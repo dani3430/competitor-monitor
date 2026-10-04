@@ -1,69 +1,280 @@
-import Image from "next/image";
+"use client";
+import { useState } from "react";
+import ThemeToggle from "@/components/ThemeToggle";
+import RainOverlay from "@/components/RainOverlay";
+import ScoreChart from "@/components/ScoreChart";
+
+const SOCIAL_FIELDS = [
+  ["youtube", "YouTube channel"],
+  ["instagram", "Instagram"],
+  ["facebook", "Facebook"],
+  ["twitter", "X (Twitter)"],
+  ["linkedin", "LinkedIn"],
+  ["tiktok", "TikTok"],
+];
+
+const emptyBrand = () => ({
+  name: "",
+  website: "",
+  youtube: "",
+  instagram: "",
+  facebook: "",
+  twitter: "",
+  linkedin: "",
+  tiktok: "",
+});
+
+const inputClass =
+  "w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/30 dark:border-white/10 dark:bg-white/5 dark:text-slate-100 dark:placeholder-slate-500";
+
+const cardClass =
+  "rounded-2xl border border-slate-200 bg-white/70 p-6 shadow-sm backdrop-blur dark:border-white/10 dark:bg-white/5";
+
+function BrandFields({ value, onChange, namePlaceholder }) {
+  const set = (key, v) => onChange({ ...value, [key]: v });
+  const socialCount = SOCIAL_FIELDS.filter(([key]) => value[key].trim()).length;
+
+  return (
+    <div className="space-y-3">
+      <input
+        className={inputClass}
+        placeholder={namePlaceholder}
+        value={value.name}
+        onChange={(e) => set("name", e.target.value)}
+      />
+      <input
+        className={inputClass}
+        placeholder="Website link (https://...)"
+        value={value.website}
+        onChange={(e) => set("website", e.target.value)}
+      />
+      <details className="group rounded-xl border border-slate-200 px-4 py-3 dark:border-white/10">
+        <summary className="cursor-pointer select-none text-sm font-medium text-cyan-600 dark:text-cyan-300">
+          Social channels (optional){socialCount > 0 ? ` · ${socialCount} added` : ""}
+        </summary>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          {SOCIAL_FIELDS.map(([key, label]) => (
+            <input
+              key={key}
+              className={inputClass}
+              placeholder={`${label} link`}
+              value={value[key]}
+              onChange={(e) => set(key, e.target.value)}
+            />
+          ))}
+        </div>
+      </details>
+    </div>
+  );
+}
+
+const priorityStyle = {
+  high: "bg-rose-500/15 text-rose-600 dark:text-rose-300",
+  medium: "bg-amber-500/15 text-amber-600 dark:text-amber-300",
+  low: "bg-sky-500/15 text-sky-600 dark:text-sky-300",
+};
 
 export default function Home() {
+  const [me, setMe] = useState(emptyBrand());
+  const [competitors, setCompetitors] = useState([emptyBrand(), emptyBrand()]);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [error, setError] = useState("");
+  const [result, setResult] = useState(null);
+
+  const setCompetitor = (index, value) =>
+    setCompetitors((list) => list.map((c, i) => (i === index ? value : c)));
+  const addCompetitor = () =>
+    setCompetitors((list) => (list.length < 4 ? [...list, emptyBrand()] : list));
+  const removeCompetitor = (index) =>
+    setCompetitors((list) => (list.length > 1 ? list.filter((_, i) => i !== index) : list));
+
+  const analyze = async () => {
+    setError("");
+    setAnalyzing(true);
+    const minimumTime = new Promise((r) => setTimeout(r, 2500)); // so the rain is always visible
+    try {
+      const [res] = await Promise.all([
+        fetch("/api/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ me, competitors }),
+        }),
+        minimumTime,
+      ]);
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Something went wrong");
+        setResult(null);
+      } else {
+        setResult(data);
+        setTimeout(() => {
+          const el = document.getElementById("report");
+          if (el) el.scrollIntoView({ behavior: "smooth" });
+        }, 100);
+      }
+    } catch {
+      setError("Could not reach the server. Check your connection and try again.");
+    }
+    setAnalyzing(false);
+  };
+
+  const cmp = result ? result.comparison : null;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.js
-            </code>{" "}
-            file.
+    <main className="min-h-screen">
+      <RainOverlay active={analyzing} />
+
+      <div className="mx-auto max-w-4xl px-6 py-10">
+        <header className="flex items-center justify-between">
+          <span className="text-lg font-bold tracking-tight">Competitor Monitor</span>
+          <ThemeToggle />
+        </header>
+
+        <section className="mt-14 text-center">
+          <h1 className="bg-gradient-to-r from-cyan-500 to-indigo-500 bg-clip-text text-4xl font-bold text-transparent sm:text-5xl">
+            See how you compare
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="mx-auto mt-4 max-w-2xl text-slate-600 dark:text-slate-400">
+            Add your website and social channels, then your competitors. Every field except one
+            link is optional. The more you add, the better the comparison.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+        </section>
+
+        <section className={`mt-10 ${cardClass}`}>
+          <h2 className="text-lg font-semibold">You</h2>
+          <div className="mt-3">
+            <BrandFields value={me} onChange={setMe} namePlaceholder="Your brand name (optional)" />
+          </div>
+        </section>
+
+        <section className="mt-6 space-y-6">
+          {competitors.map((c, i) => (
+            <div key={i} className={cardClass}>
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold">Competitor {i + 1}</h2>
+                {competitors.length > 1 && (
+                  <button
+                    onClick={() => removeCompetitor(i)}
+                    aria-label="Remove competitor"
+                    className="rounded-lg border border-slate-300 px-3 py-1 text-sm text-slate-500 transition hover:border-rose-400 hover:text-rose-500 dark:border-white/10"
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+              <div className="mt-3">
+                <BrandFields
+                  value={c}
+                  onChange={(v) => setCompetitor(i, v)}
+                  namePlaceholder="Competitor name (optional)"
+                />
+              </div>
+            </div>
+          ))}
+        </section>
+
+        {error && (
+          <p className="mt-6 rounded-xl bg-rose-500/10 px-4 py-3 text-sm font-medium text-rose-600 dark:text-rose-300">
+            {error}
+          </p>
+        )}
+
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+          {competitors.length < 4 ? (
+            <button
+              onClick={addCompetitor}
+              className="text-sm font-medium text-cyan-600 hover:text-cyan-500 dark:text-cyan-300"
+            >
+              + Add another competitor
+            </button>
+          ) : (
+            <span />
+          )}
+          <button
+            onClick={analyze}
+            disabled={analyzing}
+            className="rounded-xl bg-cyan-500 px-6 py-3 font-semibold text-slate-950 transition hover:scale-105 hover:bg-cyan-400 disabled:opacity-50"
           >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            {analyzing ? "Analyzing…" : "Analyze"}
+          </button>
         </div>
-      </main>
-    </div>
+
+        {result && (
+          <section id="report" className="mt-14 space-y-6">
+            <h2 className="text-2xl font-bold">Your report</h2>
+
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div className={cardClass}>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Your score</p>
+                <p className="mt-1 text-4xl font-bold">{result.me.overall}</p>
+              </div>
+              <div className={cardClass}>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Competitor average</p>
+                <p className="mt-1 text-4xl font-bold">{cmp ? cmp.competitor_overall : "-"}</p>
+              </div>
+              <div className={cardClass}>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Your rank</p>
+                <p className="mt-1 text-4xl font-bold">
+                  {cmp ? `${cmp.rank} of ${cmp.total}` : "-"}
+                </p>
+              </div>
+            </div>
+            {cmp && (
+              <div className={cardClass}>
+                <h3 className="font-semibold">You vs competitors</h3>
+                <div className="mt-4">
+                  <ScoreChart dimensions={cmp.dimensions} />
+                </div>
+              </div>
+            )}
+            {cmp && (
+              <div className={cardClass}>
+                <h3 className="font-semibold">Recommendations</h3>
+                {cmp.recommendations.length === 0 && (
+                  <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
+                    No major gaps found. Nice work.
+                  </p>
+                )}
+                <ul className="mt-3 space-y-3">
+                  {cmp.recommendations.map((r, i) => (
+                    <li key={i} className="flex gap-3 text-sm">
+                      <span
+                        className={`h-fit shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold uppercase ${priorityStyle[r.priority]}`}
+                      >
+                        {r.priority}
+                      </span>
+                      <span>
+                        <strong>{r.area}:</strong> {r.text}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {cmp && cmp.strengths.length > 0 && (
+              <div className={cardClass}>
+                <h3 className="font-semibold">Your strengths</h3>
+                <ul className="mt-3 list-disc space-y-1 pl-5 text-sm">
+                  {cmp.strengths.map((s, i) => (
+                    <li key={i}>{s}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {result.competitors.some((c) => !c.ok) && (
+              <p className="text-sm text-amber-600 dark:text-amber-300">
+                Some competitors could not be read:{" "}
+                {result.competitors
+                  .filter((c) => !c.ok)
+                  .map((c) => `${c.name} (${c.error})`)
+                  .join("; ")}
+              </p>
+            )}
+          </section>
+        )}
+      </div>
+    </main>
   );
 }

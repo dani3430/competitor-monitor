@@ -3,15 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "sync": "node sync-data.mjs",
+    "dev": "node sync-data.mjs && next dev",
+    "build": "node sync-data.mjs && next build",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
+    "cheerio": "^1.2.0",
     "next": "16.3.8",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "recharts": "^3.10.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
