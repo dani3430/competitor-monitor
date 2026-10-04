@@ -2,13 +2,12 @@
   "name": "web",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
-    "sync": "node sync-data.mjs",
-    "dev": "node sync-data.mjs && next dev",
-    "build": "node sync-data.mjs && next build",
+    "scripts": {
+    "dev": "next dev",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint",
-     "test": "node --test"
+    "test": "node --test"
   },
   "dependencies": {
     "cheerio": "^1.2.0",
