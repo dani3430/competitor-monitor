@@ -1,0 +1,10 @@
+[
+  {
+    "name": "Example",
+    "url": "https://example.com",
+    "status": 200,
+    "title": "Example Domain",
+    "response_ms": 99,
+    "checked_at": "2026-10-04T11:41:46.580933+00:00"
+  }
+]
