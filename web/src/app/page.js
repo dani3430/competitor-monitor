@@ -1,8 +1,10 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ThemeToggle from "@/components/ThemeToggle";
 import RainOverlay from "@/components/RainOverlay";
 import ScoreChart from "@/components/ScoreChart";
+import BrandCard from "@/components/BrandCard";
+import { loadReports, saveReport, deleteReport, clearReports } from "@/lib/history";
 
 const SOCIAL_FIELDS = [
   ["youtube", "YouTube channel"],
@@ -80,7 +82,13 @@ export default function Home() {
   const [analyzing, setAnalyzing] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState(null);
+  const [saved, setSaved] = useState([]);
 
+  // Load saved reports once, after the page opens
+  useEffect(() => {
+    const id = setTimeout(() => setSaved(loadReports()), 0);
+    return () => clearTimeout(id);
+  }, []);
   const setCompetitor = (index, value) =>
     setCompetitors((list) => list.map((c, i) => (i === index ? value : c)));
   const addCompetitor = () =>
@@ -106,7 +114,8 @@ export default function Home() {
         setError(data.error || "Something went wrong");
         setResult(null);
       } else {
-        setResult(data);
+                setResult(data);
+        setSaved(saveReport(data));
         setTimeout(() => {
           const el = document.getElementById("report");
           if (el) el.scrollIntoView({ behavior: "smooth" });
@@ -118,6 +127,20 @@ export default function Home() {
     setAnalyzing(false);
   };
 
+  const exportPdf = () => {
+    const root = document.documentElement;
+    const wasDark = root.classList.contains("dark");
+    // The PDF is always printed in light colors
+    root.classList.remove("dark");
+    window.addEventListener(
+      "afterprint",
+      () => {
+        if (wasDark) root.classList.add("dark");
+      },
+      { once: true }
+    );
+    window.print();
+  };
   const cmp = result ? result.comparison : null;
 
   return (
@@ -198,10 +221,58 @@ export default function Home() {
             {analyzing ? "Analyzing…" : "Analyze"}
           </button>
         </div>
-
+        {saved.length > 0 && (
+          <section className={`mt-10 ${cardClass}`}>
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold">Past reports</h2>
+              <button
+                onClick={() => setSaved(clearReports())}
+                className="text-sm text-slate-500 hover:text-rose-500"
+              >
+                Clear all
+              </button>
+            </div>
+            <ul className="mt-3 divide-y divide-slate-200 dark:divide-white/10">
+              {saved.map((r) => (
+                <li key={r.id} className="flex items-center justify-between gap-3 py-3 text-sm">
+                  <button
+                    onClick={() => {
+                      setResult(r.result);
+                      setTimeout(() => {
+                        const el = document.getElementById("report");
+                        if (el) el.scrollIntoView({ behavior: "smooth" });
+                      }, 100);
+                    }}
+                    className="min-w-0 text-left hover:text-cyan-600 dark:hover:text-cyan-300"
+                  >
+                    <span className="block truncate font-medium">{r.label}</span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400">
+                      Score {r.score} · {new Date(r.saved_at).toLocaleString()}
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => setSaved(deleteReport(r.id))}
+                    aria-label="Delete report"
+                    className="shrink-0 text-slate-400 hover:text-rose-500"
+                  >
+                    ✕
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
         {result && (
           <section id="report" className="mt-14 space-y-6">
-            <h2 className="text-2xl font-bold">Your report</h2>
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 className="text-2xl font-bold">Your report</h2>
+              <button
+                onClick={exportPdf}
+                className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold transition hover:border-cyan-500 hover:text-cyan-600 print:hidden dark:border-white/10 dark:hover:text-cyan-300"
+              >
+                Export PDF
+              </button>
+            </div>
 
             <div className="grid gap-4 sm:grid-cols-3">
               <div className={cardClass}>
@@ -227,6 +298,12 @@ export default function Home() {
                 </div>
               </div>
             )}
+                        <div className="grid gap-4 md:grid-cols-2">
+              <BrandCard brand={result.me} isMe />
+              {result.competitors.map((c, i) => (
+                <BrandCard key={i} brand={c} />
+              ))}
+            </div>
             {cmp && (
               <div className={cardClass}>
                 <h3 className="font-semibold">Recommendations</h3>

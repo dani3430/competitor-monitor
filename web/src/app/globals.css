@@ -80,3 +80,28 @@ html.dark ::-webkit-scrollbar-thumb:hover {
     transition-duration: 0.01ms !important;
   }
 }
+/* Print / Save as PDF: show only the report */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #report,
+  #report * {
+    visibility: visible;
+  }
+  #report {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+  html,
+  body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
