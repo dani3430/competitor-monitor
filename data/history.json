@@ -1,0 +1,41 @@
+{
+  "https://example.com": [
+    {
+      "name": "Example",
+      "url": "https://example.com",
+      "status": 200,
+      "up": true,
+      "title": "Example Domain",
+      "response_ms": 104,
+      "hash": "162b81548a8d",
+      "changed": false,
+      "checked_at": "2026-10-04T12:13:55.688784+00:00"
+    }
+  ],
+  "https://www.python.org": [
+    {
+      "name": "Python",
+      "url": "https://www.python.org",
+      "status": 200,
+      "up": true,
+      "title": "Welcome to Python.org",
+      "response_ms": 276,
+      "hash": "b8a48e368de2",
+      "changed": false,
+      "checked_at": "2026-10-04T12:13:55.799479+00:00"
+    }
+  ],
+  "https://github.com": [
+    {
+      "name": "GitHub",
+      "url": "https://github.com",
+      "status": 200,
+      "up": true,
+      "title": "GitHub \u00b7 Change is constant. GitHub keeps you ahead. \u00b7 GitHub",
+      "response_ms": 338,
+      "hash": "0c743d410f58",
+      "changed": false,
+      "checked_at": "2026-10-04T12:13:56.305346+00:00"
+    }
+  ]
+}
