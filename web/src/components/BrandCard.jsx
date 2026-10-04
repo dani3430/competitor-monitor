@@ -1,3 +1,4 @@
+import ScoreRing from "@/components/ScoreRing";
 function Chip({ children, tone = "slate" }) {
   const tones = {
     slate: "bg-slate-500/10 text-slate-600 dark:text-slate-300",
@@ -52,9 +53,7 @@ export default function BrandCard({ brand, isMe }) {
           </h3>
           {w && <p className="truncate text-xs text-slate-500 dark:text-slate-400">{w.title}</p>}
         </div>
-        <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full border-4 border-cyan-500/70 text-lg font-bold">
-          {brand.overall}
-        </div>
+               <ScoreRing score={brand.overall} />
       </div>
 
       <div className="mt-3">

@@ -30,7 +30,7 @@ const inputClass =
   "w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/30 dark:border-white/10 dark:bg-white/5 dark:text-slate-100 dark:placeholder-slate-500";
 
 const cardClass =
-  "rounded-2xl border border-slate-200 bg-white/70 p-6 shadow-sm backdrop-blur dark:border-white/10 dark:bg-white/5";
+  "rounded-2xl border border-slate-200 bg-white/70 p-6 shadow-sm backdrop-blur transition duration-300 hover:border-cyan-400/50 hover:shadow-lg hover:shadow-cyan-500/10 dark:border-white/10 dark:bg-white/5";
 
 function BrandFields({ value, onChange, namePlaceholder }) {
   const set = (key, v) => onChange({ ...value, [key]: v });
@@ -166,12 +166,12 @@ export default function Home() {
 
       <div className="mx-auto max-w-4xl px-6 py-10">
         <header className="flex items-center justify-between">
-          <span className="text-lg font-bold tracking-tight">Competitor Monitor</span>
+          <span className="text-lg font-bold tracking-tight">Automated Competitor Monitoring Dashboard</span>
           <ThemeToggle />
         </header>
 
         <section className="mt-14 text-center">
-          <h1 className="bg-gradient-to-r from-cyan-500 to-indigo-500 bg-clip-text text-4xl font-bold text-transparent sm:text-5xl">
+          <h1 className=" shimmer-text bg-gradient-to-r from-cyan-500 to-indigo-500 bg-clip-text text-4xl font-bold text-transparent sm:text-5xl">
             See how you compare
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-slate-600 dark:text-slate-400">
@@ -233,7 +233,7 @@ export default function Home() {
           <button
             onClick={analyze}
             disabled={analyzing}
-            className="rounded-xl bg-cyan-500 px-6 py-3 font-semibold text-slate-950 transition hover:scale-105 hover:bg-cyan-400 disabled:opacity-50"
+                       className="btn-glow rounded-xl px-6 py-3 font-semibold text-white disabled:opacity-50"
           >
             {analyzing ? "Analyzing…" : "Analyze"}
           </button>
@@ -280,7 +280,7 @@ export default function Home() {
           </section>
         )}
         {result && (
-          <section id="report" className="mt-14 space-y-6">
+                   <section id="report" className="fade-up mt-14 space-y-6">
                         <div className="flex flex-wrap items-center justify-between gap-3">
               <h2 className="text-2xl font-bold">Your report</h2>
               <button

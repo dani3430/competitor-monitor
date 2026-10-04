@@ -5,7 +5,7 @@ export default function Footer() {
     <footer className="mt-20 border-t border-slate-200 dark:border-white/10">
       <div className="mx-auto flex max-w-4xl flex-col items-center justify-between gap-3 px-6 py-8 text-sm text-slate-500 sm:flex-row dark:text-slate-400">
         <p>
-          © {year} Competitor Monitor. Developed by{" "}
+          © {year} Automated Competitor Monitoring Dashboard. Developed by{" "}
           <span className="font-semibold text-slate-900 dark:text-slate-100">Daniel Temesgen</span>.
         </p>
         <div className="flex items-center gap-5">
