@@ -54,6 +54,17 @@
       "hash": "162b81548a8d",
       "changed": false,
       "checked_at": "2026-10-05T14:08:34.772693+00:00"
+    },
+    {
+      "name": "Example",
+      "url": "https://example.com",
+      "status": 200,
+      "up": true,
+      "title": "Example Domain",
+      "response_ms": 47,
+      "hash": "162b81548a8d",
+      "changed": false,
+      "checked_at": "2026-10-05T23:54:37.710392+00:00"
     }
   ],
   "https://www.python.org": [
@@ -111,6 +122,17 @@
       "hash": "b8a48e368de2",
       "changed": false,
       "checked_at": "2026-10-05T14:08:34.845584+00:00"
+    },
+    {
+      "name": "Python",
+      "url": "https://www.python.org",
+      "status": 200,
+      "up": true,
+      "title": "Welcome to Python.org",
+      "response_ms": 75,
+      "hash": "b8a48e368de2",
+      "changed": false,
+      "checked_at": "2026-10-05T23:54:37.760588+00:00"
     }
   ],
   "https://github.com": [
@@ -168,6 +190,17 @@
       "hash": "0c743d410f58",
       "changed": false,
       "checked_at": "2026-10-05T14:08:34.925472+00:00"
+    },
+    {
+      "name": "GitHub",
+      "url": "https://github.com",
+      "status": 200,
+      "up": true,
+      "title": "GitHub \u00b7 Change is constant. GitHub keeps you ahead. \u00b7 GitHub \u00b7 GitHub",
+      "response_ms": 85,
+      "hash": "ca7072db3aff",
+      "changed": true,
+      "checked_at": "2026-10-05T23:54:37.887848+00:00"
     }
   ]
 }
