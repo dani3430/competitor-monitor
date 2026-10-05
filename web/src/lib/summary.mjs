@@ -52,31 +52,36 @@ export async function aiSummary(result, env = process.env) {
     "You are a business analyst. Write a summary of 3 to 4 sentences, in plain English, " +
     "for a small business owner, from these competitor comparison results. " +
     "Say where they stand, their biggest weakness and strength, and the first action to take. " +
-    "Use only the facts given. Do not invent numbers. No bullet points, no markdown.\n\n" +
+        "Use only the facts given. Do not invent numbers. No bullet points, no markdown. " +
+    "If the recommendations list is empty, say that no major gaps were found. " +
+    "Never mention missing, empty or unavailable data.\n\n" +
     JSON.stringify(facts);
 
-  const model = env.GEMINI_MODEL || "gemini-3.8-flash";
+    const model = env.GEMINI_MODEL || "gemini-3.8-flash";
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+  const deadline = Date.now() + 14000; // never wait more than about 14 seconds in total
 
   for (let attempt = 0; attempt < 2; attempt++) {
+    const remaining = deadline - Date.now();
+    if (remaining < 3000) break;
     try {
       const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-goog-api-key": key },
         body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
-            signal: AbortSignal.timeout(12000),
+        signal: AbortSignal.timeout(Math.min(9000, remaining)),
       });
       if (res.ok) {
         const data = await res.json();
         const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
         return text ? text.trim() : null;
       }
-      // Only a busy server (503) is worth retrying. Wrong key or limit reached (429) is not.
+      // Only a busy server (503) is worth retrying
       if (res.status !== 503) return null;
-     } catch {
-      // timeout or network error: try once more
+    } catch {
+      // timeout or network error: try once more if time is left
     }
-    await new Promise((r) => setTimeout(r, 1200));
+    await new Promise((r) => setTimeout(r, 800));
   }
   return null;
 }

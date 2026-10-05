@@ -301,7 +301,7 @@ export default function Home() {
                         : "bg-slate-500/10 text-slate-600 dark:text-slate-300"
                     }`}
                   >
-                    {aiShown ? "AI-written" : aiLoading ? "Rule-based · AI loading…" : "Rule-based"}
+                    {aiShown ? "AI-written" : aiLoading ? "Rule-based · AI loading…" : "Rule-based · AI unavailable right now"}
                   </span>
                 </div>
                 <p className="mt-3 text-sm leading-relaxed">{summaryText}</p>
