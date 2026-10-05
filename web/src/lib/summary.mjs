@@ -59,18 +59,19 @@ export async function aiSummary(result, env = process.env) {
 
     const model = env.GEMINI_MODEL || "gemini-3.8-flash";
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
-  const deadline = Date.now() + 14000; // never wait more than about 14 seconds in total
+    const deadline = Date.now() + 25000; // give up cleanly before the 30 second route limit
 
   for (let attempt = 0; attempt < 2; attempt++) {
     const remaining = deadline - Date.now();
-    if (remaining < 3000) break;
+    if (remaining < 4000) break;
     try {
       const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-goog-api-key": key },
         body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
-        signal: AbortSignal.timeout(Math.min(9000, remaining)),
+        signal: AbortSignal.timeout(remaining),
       });
+      console.log("Gemini status:", res.status);
       if (res.ok) {
         const data = await res.json();
         const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
@@ -78,8 +79,9 @@ export async function aiSummary(result, env = process.env) {
       }
       // Only a busy server (503) is worth retrying
       if (res.status !== 503) return null;
-    } catch {
-      // timeout or network error: try once more if time is left
+    } catch (e) {
+      console.log("Gemini request failed:", e.name);
+      return null; // a timeout used up the time budget, so a retry would not fit
     }
     await new Promise((r) => setTimeout(r, 800));
   }
