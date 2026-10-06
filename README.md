@@ -29,6 +29,7 @@ Competitor Monitor turns a few links into a scored comparison and a short, ranke
 - Saved past reports (in your own browser) and PDF export
 - Side-by-side table of pricing, promotions, calls to action and channels
 - Progress tracking: compares each report with your previous one for the same brand.
+- "Try an example" button that runs a full demo in one click
 
 ## How it works
 
