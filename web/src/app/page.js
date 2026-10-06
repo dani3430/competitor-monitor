@@ -97,7 +97,8 @@ export default function Home() {
   const removeCompetitor = (index) =>
     setCompetitors((list) => (list.length > 1 ? list.filter((_, i) => i !== index) : list));
 
-  const analyze = async () => {
+   const analyze = async (payload) => {
+    const input = payload || { me, competitors };
     setError("");
     setAnalyzing(true);
     const minimumTime = new Promise((r) => setTimeout(r, 2500)); // so the rain is always visible
@@ -106,7 +107,7 @@ export default function Home() {
         fetch("/api/analyze", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ me, competitors }),
+                    body: JSON.stringify(input),
         }),
         minimumTime,
       ]);
@@ -155,6 +156,16 @@ export default function Home() {
       { once: true }
     );
     window.print();
+  };
+    const runExample = () => {
+    const exMe = { ...emptyBrand(), name: "Shopify", website: "https://www.shopify.com" };
+    const exCompetitors = [
+      { ...emptyBrand(), name: "BigCommerce", website: "https://www.bigcommerce.com" },
+      { ...emptyBrand(), name: "Squarespace", website: "https://www.squarespace.com" },
+    ];
+    setMe(exMe);
+    setCompetitors(exCompetitors);
+    analyze({ me: exMe, competitors: exCompetitors });
   };
   const cmp = result ? result.comparison : null;
     const aiShown = Boolean(ai && result && ai.for === result.generated_at);
@@ -230,13 +241,22 @@ export default function Home() {
           ) : (
             <span />
           )}
-          <button
-            onClick={analyze}
-            disabled={analyzing}
-                       className="btn-glow rounded-xl px-6 py-3 font-semibold text-white disabled:opacity-50"
-          >
-            {analyzing ? "Analyzing…" : "Analyze"}
-          </button>
+                    <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={runExample}
+              disabled={analyzing}
+              className="rounded-xl border border-slate-300 px-5 py-3 text-sm font-semibold transition hover:border-cyan-500 hover:text-cyan-600 disabled:opacity-50 dark:border-white/10 dark:hover:text-cyan-300"
+            >
+              Try an example
+            </button>
+            <button
+              onClick={() => analyze()}
+              disabled={analyzing}
+              className="btn-glow rounded-xl px-6 py-3 font-semibold text-white disabled:opacity-50"
+            >
+              {analyzing ? "Analyzing…" : "Analyze"}
+            </button>
+          </div>
         </div>
         {saved.length > 0 && (
           <section className={`mt-10 ${cardClass}`}>
