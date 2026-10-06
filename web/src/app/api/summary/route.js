@@ -21,6 +21,7 @@ export async function POST(req) {
       })),
       comparison: {
         me_overall: num(cmp.me_overall),
+                no_peers: Boolean(cmp.no_peers),
         competitor_overall: num(cmp.competitor_overall),
         rank: num(cmp.rank),
         total: num(cmp.total),

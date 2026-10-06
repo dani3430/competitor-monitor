@@ -315,21 +315,33 @@ export default function Home() {
               </div>
               <div className={cardClass}>
                 <p className="text-sm text-slate-500 dark:text-slate-400">Competitor average</p>
-                <p className="mt-1 text-4xl font-bold">{cmp ? cmp.competitor_overall : "-"}</p>
+                             <p className="mt-1 text-4xl font-bold">
+                  {cmp && !cmp.no_peers ? cmp.competitor_overall : "-"}
+                </p>
               </div>
               <div className={cardClass}>
                 <p className="text-sm text-slate-500 dark:text-slate-400">Your rank</p>
                 <p className="mt-1 text-4xl font-bold">
-                  {cmp ? `${cmp.rank} of ${cmp.total}` : "-"}
+                                  {cmp && !cmp.no_peers ? `${cmp.rank} of ${cmp.total}` : "-"}
                 </p>
               </div>
             </div>
-            {cmp && (
+              {cmp && cmp.dimensions.length > 0 && (
               <div className={cardClass}>
                 <h3 className="font-semibold">You vs competitors</h3>
                 <div className="mt-4">
                   <ScoreChart dimensions={cmp.dimensions} />
                 </div>
+              </div>
+            )}
+                        {cmp && cmp.notes && cmp.notes.length > 0 && (
+              <div className="rounded-2xl border border-amber-400/40 bg-amber-500/10 p-5 text-sm text-amber-800 dark:text-amber-200">
+                <p className="font-semibold">Data quality notes</p>
+                <ul className="mt-2 list-disc space-y-1 pl-5">
+                  {cmp.notes.map((n, i) => (
+                    <li key={i}>{n}</li>
+                  ))}
+                </ul>
               </div>
             )}
                         <div className="grid gap-4 md:grid-cols-2">
@@ -338,7 +350,7 @@ export default function Home() {
                 <BrandCard key={i} brand={c} />
               ))}
             </div>
-            {cmp && (
+            {cmp && !cmp.no_peers && (
               <div className={cardClass}>
                 <h3 className="font-semibold">Recommendations</h3>
                 {cmp.recommendations.length === 0 && (

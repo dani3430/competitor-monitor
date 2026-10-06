@@ -55,6 +55,11 @@ export default function BrandCard({ brand, isMe }) {
         </div>
                <ScoreRing score={brand.overall} />
       </div>
+            {brand.limited && (
+        <div className="mt-3 rounded-lg bg-amber-500/15 px-3 py-2 text-xs font-medium text-amber-700 dark:text-amber-300">
+          ⚠ Limited data: {w && w.quality ? w.quality.reason : "Very little readable content was found."}
+        </div>
+      )}
 
       <div className="mt-3">
         {w && (

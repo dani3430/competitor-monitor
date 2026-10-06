@@ -1,6 +1,7 @@
 import * as cheerio from "cheerio";
-import { clamp, avg, median, extractPrices, websiteScores, compare } from "@/lib/scoring.mjs";
+import { clamp, avg, median, extractPrices, websiteScores, assessQuality, compare } from "@/lib/scoring.mjs";
 import { ruleSummary } from "@/lib/summary.mjs";
+
 export const maxDuration = 30;
 
 const UA = { "User-Agent": "Mozilla/5.0 (compatible; CompetitorMonitor/1.0)" };
@@ -106,6 +107,12 @@ async function analyzeWebsite(parsed) {
   const image = meta("og:image");
   const text = pageText($);
 
+  const quality = assessQuality({
+    status: res.status,
+    textLength: text.length,
+    linkCount: $("a[href]").length,
+    headingsCount: headings.length,
+  });
   let { values, currency } = extractPrices(text);
   let pricingText = text;
   if (pricingUrl && pricingUrl !== res.url) {
@@ -161,6 +168,7 @@ async function analyzeWebsite(parsed) {
     has_trust: hasTrust,
     has_schema: schema,
     socials,
+    quality,
     checked_at: new Date().toISOString(),
   };
 
@@ -345,6 +353,7 @@ async function analyzeBrand(brand) {
     scores,
     overall: clamp(avg(Object.values(scores))),
     checked_at: new Date().toISOString(),
+    limited: Boolean(website && website.quality.limited && !youtube),
   };
 }
 

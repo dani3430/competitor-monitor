@@ -34,7 +34,7 @@ export function ruleSummary(result) {
 export async function aiSummary(result, env = process.env) {
   const key = env.GEMINI_API_KEY;
   const cmp = result.comparison;
-    if (!key || !cmp) return null;
+   if (!key || !cmp || cmp.no_peers) return null;
 
   // Only compact facts are sent, never raw page content
   const facts = {

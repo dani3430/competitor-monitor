@@ -7,6 +7,7 @@ import {
   extractPrices,
   speedScore,
   websiteScores,
+  assessQuality,
   compare,
 } from "./scoring.mjs";
 
@@ -134,4 +135,31 @@ test("compare reports channels that only competitors have", () => {
   const rival = brand("Rival", { Speed: 50 }, { socials: { youtube: "https://youtube.com/x" } });
   const r = compare(me, [rival]);
   assert.ok(r.recommendations.some((x) => x.area === "Channels"));
+});
+test("assessQuality flags error pages and almost-empty pages", () => {
+  assert.equal(assessQuality({ status: 403, textLength: 5000, linkCount: 50, headingsCount: 5 }).limited, true);
+  assert.equal(assessQuality({ status: 200, textLength: 100, linkCount: 50, headingsCount: 5 }).limited, true);
+  assert.equal(assessQuality({ status: 200, textLength: 5000, linkCount: 1, headingsCount: 0 }).limited, true);
+});
+
+test("assessQuality accepts a normal page", () => {
+  assert.equal(assessQuality({ status: 200, textLength: 5000, linkCount: 40, headingsCount: 6 }).limited, false);
+});
+
+test("compare leaves limited competitors out of the averages", () => {
+  const me = brand("Me", { Speed: 50 });
+  const blocked = brand("Blocked", { Speed: 0 }, { limited: true });
+  const good = brand("Good", { Speed: 50 });
+  const r = compare(me, [blocked, good]);
+  assert.equal(r.dimensions[0].avg, 50);
+  assert.equal(r.total, 2);
+  assert.ok(r.notes.some((n) => n.includes("Blocked")));
+});
+
+test("compare handles the case where every competitor has limited data", () => {
+  const me = brand("Me", { Speed: 50 });
+  const blocked = brand("Blocked", { Speed: 0 }, { limited: true });
+  const r = compare(me, [blocked]);
+  assert.equal(r.no_peers, true);
+  assert.equal(r.notes.length, 1);
 });

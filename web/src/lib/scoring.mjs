@@ -31,6 +31,19 @@ export function speedScore(ms) {
   return 20;
 }
 
+export function assessQuality({ status, textLength, linkCount, headingsCount }) {
+  if (status >= 400) {
+    return { limited: true, reason: `The site answered with an error (status ${status}).` };
+  }
+  if (textLength < 400 || (linkCount < 3 && headingsCount === 0)) {
+    return {
+      limited: true,
+      reason:
+        "Very little readable content was found. The site may block automatic readers or build its content with JavaScript.",
+    };
+  }
+  return { limited: false, reason: "" };
+}
 export function websiteScores(s) {
   const pricing =
     (s.pricing.found ? 60 : 0) +
@@ -79,8 +92,29 @@ export const TIPS = {
 };
 
 export function compare(me, others) {
-  const peers = others.filter((o) => o.ok);
-  if (!peers.length) return null;
+  const readable = others.filter((o) => o.ok);
+  if (!readable.length) return null;
+
+  // Competitors with too little readable data are left out of the averages
+  const peers = readable.filter((o) => !o.limited);
+  const notes = readable
+    .filter((o) => o.limited)
+    .map((o) => `${o.name} was left out of the comparison: limited data (it may block automatic readers).`);
+  if (me.limited) notes.push("Your own site returned limited data, so your scores may be understated.");
+
+  if (!peers.length) {
+    return {
+      dimensions: [],
+      rank: 1,
+      total: 1,
+      me_overall: me.overall,
+      competitor_overall: 0,
+      strengths: [],
+      recommendations: [],
+      notes,
+      no_peers: true,
+    };
+  }
 
   const dimensions = Object.keys(me.scores)
     .map((name) => {
@@ -179,6 +213,7 @@ export function compare(me, others) {
     me_overall: me.overall,
     competitor_overall: clamp(avg(peers.map((p) => p.overall))),
     strengths,
-    recommendations: recs,
+       recommendations: recs,
+    notes,
   };
 }
