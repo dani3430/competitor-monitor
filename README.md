@@ -6,6 +6,7 @@ Compare your website and social channels against your competitors. Get a scored 
 **Code:** https://github.com/dani3430/competitor-monitor
 
 ![Report screenshot](docs/screenshot-report.png)
+[![CI](https://github.com/dani3430/competitor-monitor/actions/workflows/ci.yml/badge.svg)](https://github.com/dani3430/competitor-monitor/actions/workflows/ci.yml)
 
 ## The problem
 
@@ -24,6 +25,7 @@ Competitor Monitor turns a few links into a scored comparison and a short, ranke
 - Prioritized recommendations (high, medium, low) and a list of your strengths
 - Short summary written by AI when available, with an automatic rule-based fallback
 - Animated "analysis" screen, dark and light mode, responsive layout, reduced-motion support
+- Data-quality warnings: sites that return too little readable content are flagged and left out of the averages
 - Saved past reports (in your own browser) and PDF export
 
 ## How it works
@@ -106,7 +108,6 @@ This is a **rule-based estimate from publicly visible signals**, not a guarantee
 
 ## Roadmap
 
-- Warn when a site returns limited data and leave it out of the comparison
 - Rate limiting on the API routes
 - Automated tests and linting on every push (GitHub Actions)
 - Real speed data from Google's PageSpeed Insights
