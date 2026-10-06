@@ -4,6 +4,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import RainOverlay from "@/components/RainOverlay";
 import ScoreChart from "@/components/ScoreChart";
 import BrandCard from "@/components/BrandCard";
+import ComparisonTable from "@/components/ComparisonTable";
 import { loadReports, saveReport, deleteReport, clearReports } from "@/lib/history";
 
 const SOCIAL_FIELDS = [
@@ -364,6 +365,7 @@ export default function Home() {
                 </ul>
               </div>
             )}
+                        <ComparisonTable brands={[result.me, ...result.competitors]} />
                         <div className="grid gap-4 md:grid-cols-2">
               <BrandCard brand={result.me} isMe />
               {result.competitors.map((c, i) => (
