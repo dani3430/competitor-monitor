@@ -5,6 +5,8 @@ import RainOverlay from "@/components/RainOverlay";
 import ScoreChart from "@/components/ScoreChart";
 import BrandCard from "@/components/BrandCard";
 import ComparisonTable from "@/components/ComparisonTable";
+import ProgressCard from "@/components/ProgressCard";
+import { findPrevious, scoreChanges } from "@/lib/progress.mjs";
 import { loadReports, saveReport, deleteReport, clearReports } from "@/lib/history";
 
 const SOCIAL_FIELDS = [
@@ -169,6 +171,8 @@ export default function Home() {
     analyze({ me: exMe, competitors: exCompetitors });
   };
   const cmp = result ? result.comparison : null;
+  const previous = result ? findPrevious(saved, result) : null;
+  const changes = previous ? scoreChanges(result, previous.result) : null;
     const aiShown = Boolean(ai && result && ai.for === result.generated_at);
   const summaryText = aiShown ? ai.text : result && result.summary ? result.summary.text : "";
 
@@ -365,6 +369,7 @@ export default function Home() {
                 </ul>
               </div>
             )}
+                        {changes && <ProgressCard changes={changes} previousDate={previous.saved_at} />}
                         <ComparisonTable brands={[result.me, ...result.competitors]} />
                         <div className="grid gap-4 md:grid-cols-2">
               <BrandCard brand={result.me} isMe />

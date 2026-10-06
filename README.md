@@ -27,6 +27,8 @@ Competitor Monitor turns a few links into a scored comparison and a short, ranke
 - Animated "analysis" screen, dark and light mode, responsive layout, reduced-motion support
 - Data-quality warnings: sites that return too little readable content are flagged and left out of the averages
 - Saved past reports (in your own browser) and PDF export
+- Side-by-side table of pricing, promotions, calls to action and channels
+- Progress tracking: compares each report with your previous one for the same brand.
 
 ## How it works
 
