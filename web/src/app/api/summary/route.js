@@ -1,12 +1,19 @@
 import { aiSummary } from "@/lib/summary.mjs";
+import { createLimiter, clientKey } from "@/lib/rateLimit.mjs";
 
 export const maxDuration = 30;
-
+// 6 AI summaries per visitor every 10 minutes (only enforced on the live site)
+const summaryLimiter = createLimiter({ limit: 6, windowMs: 10 * 60 * 1000 });
 const str = (v, n = 80) => String(v ?? "").slice(0, n);
 const num = (v) => (Number.isFinite(v) ? v : 0);
 
 export async function POST(req) {
   try {
+    if (process.env.NODE_ENV === "production") {
+      const gate = summaryLimiter(clientKey(req));
+      if (!gate.ok) return Response.json({ text: null, source: "limited" }, { status: 429 });
+    }
+
     const body = await req.json();
     const cmp = body && body.comparison;
     if (!body || !body.me || !cmp) return Response.json({ text: null, source: "none" });

@@ -104,11 +104,11 @@ This is a **rule-based estimate from publicly visible signals**, not a guarantee
 - Instagram, Facebook, X, LinkedIn and TikTok are detected as present, but follower counts and posts are not read.
 - Pricing detection looks for currency amounts in page text, so it can miss or misread prices.
 - The AI summary uses a free tier with usage limits, so it is sometimes unavailable. The rule-based summary appears instead.
-- There is no rate limiting on the API routes yet.
+- Rate limiting is a simple in-memory guard (10 analyses and 6 AI summaries per visitor every 10 minutes). On serverless hosting it is best effort, not strict.
 
 ## Roadmap
 
-- Rate limiting on the API routes
+- Strict rate limiting with a shared store (for example a free Upstash Redis)
 - Automated tests and linting on every push (GitHub Actions)
 - Real speed data from Google's PageSpeed Insights
 - Shareable report links

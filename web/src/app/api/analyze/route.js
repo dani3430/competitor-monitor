@@ -1,8 +1,11 @@
 import * as cheerio from "cheerio";
 import { clamp, avg, median, extractPrices, websiteScores, assessQuality, compare } from "@/lib/scoring.mjs";
 import { ruleSummary } from "@/lib/summary.mjs";
+import { createLimiter, clientKey } from "@/lib/rateLimit.mjs";
 
 export const maxDuration = 30;
+// 10 analyses per visitor every 10 minutes (only enforced on the live site)
+const analyzeLimiter = createLimiter({ limit: 10, windowMs: 10 * 60 * 1000 });
 
 const UA = { "User-Agent": "Mozilla/5.0 (compatible; CompetitorMonitor/1.0)" };
 
@@ -360,6 +363,16 @@ async function analyzeBrand(brand) {
 /* ---------- API ENTRY ---------- */
 export async function POST(req) {
   try {
+    if (process.env.NODE_ENV === "production") {
+      const gate = analyzeLimiter(clientKey(req));
+      if (!gate.ok) {
+        return Response.json(
+          { error: `Too many analyses. Please try again in ${gate.retryAfter} seconds.` },
+          { status: 429 }
+        );
+      }
+    }
+
     const body = await req.json();
     const me = body.me || {};
     const competitors = (body.competitors || []).slice(0, 4);
