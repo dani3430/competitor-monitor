@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import ThemeToggle from "@/components/ThemeToggle";
 import RainOverlay from "@/components/RainOverlay";
 import ScoreChart from "@/components/ScoreChart";
+import RadarScoreChart from "@/components/RadarScoreChart";
 import BrandCard from "@/components/BrandCard";
 import ComparisonTable from "@/components/ComparisonTable";
 import ProgressCard from "@/components/ProgressCard";
@@ -354,8 +355,9 @@ export default function Home() {
               {cmp && cmp.dimensions.length > 0 && (
               <div className={cardClass}>
                 <h3 className="font-semibold">You vs competitors</h3>
-                <div className="mt-4">
+                               <div className="mt-4 grid gap-6 lg:grid-cols-2">
                   <ScoreChart dimensions={cmp.dimensions} />
+                  <RadarScoreChart dimensions={cmp.dimensions} />
                 </div>
               </div>
             )}
