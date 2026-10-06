@@ -1,9 +1,7 @@
 name: Scrape competitors
 
 on:
-  schedule:
-    - cron: "0 */6 * * *" # every 6 hours (UTC)
-  workflow_dispatch: # lets you run it manually with a button
+  workflow_dispatch: # manual only: run it from the Actions tab
 
 permissions:
   contents: write # allows the workflow to commit the new data

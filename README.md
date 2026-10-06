@@ -94,7 +94,7 @@ scraper/                       Python scheduled monitor (early prototype)
 
 ## The Python scraper
 
-The first version of this project was a fixed-list monitor: a Python script that GitHub Actions runs every 6 hours, saving results as JSON in the `data/` folder. The current web app replaced it with live analysis of links the visitor enters. The scraper remains in the repo as that early prototype.
+The first version of this project was a fixed-list monitor: a Python script, run by GitHub Actions, that saved results as JSON in the `data/` folder. The current web app replaced it with live analysis of links the visitor enters. The scraper stays in the repo as that early prototype. Its schedule is switched off, and it can still be run manually from the Actions tab.
 
 ## Limitations
 
