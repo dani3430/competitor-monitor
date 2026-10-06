@@ -1,4 +1,4 @@
-# Competitor Monitor
+# Automated Competitor Monitoring Dashboard
 
 Compare your website and social channels against your competitors. Get a scored comparison, prioritized recommendations and a short summary, free to run.
 
